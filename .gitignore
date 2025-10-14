@@ -32,3 +32,8 @@ replay_pid*
 
 /adapter/target/
 /core/target/
+
+### vscode ###
+
+.vscode/
+.tdd/

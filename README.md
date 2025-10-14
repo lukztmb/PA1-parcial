@@ -6,7 +6,7 @@
 - Desarrollar una feature, a nivel core, que permita el registro de la entidad Piloto
 
 ### Evaluacion
-- Fecha de Entrega (máximo): 14/10/2025 18:20:00 UTC-3
+- Fecha de Entrega (máximo): 14/10/2025 19:20:00 UTC-3
 - El proyecto debe compilar sin errores en cualquier entorno de programación en el que se abra
 - Todos los test unitarios deben pasar en verde
 - Se generará solo un branch para la feature, partiendo desde main

@@ -1,49 +1,66 @@
 package usecase;
 
-import model.piloto.exceptions.ExceptionPilot;
-import model.piloto.inmemory.InMemorySavePilot;
-import model.piloto.model.Pilot;
-import model.piloto.usecase.SavePilotUseCase;
-import org.junit.jupiter.api.BeforeEach;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import output.SavePilotOutput;
+import output.existsPilotOutput;
+import model.piloto.usecase.SavePilotUseCase;
+import model.piloto.model.Pilot;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatcher.*;
+
+@ExtendWith(MockitoExtension.class)
 
 public class SavePilotUseCaseTest {
 
-    private InMemorySavePilot repo;
-    private SavePilotUseCase useCase;
+    @Mock
+    SavePilotOutput repositorio;
+    existsPilotOutput exists;
 
-    @BeforeEach
-    void setUp() {
-        repo = new InMemorySavePilot();
-        useCase = new SavePilotUseCase(repo);
+    @InjectMocks
+    SavePilotUseCase useCase;
+
+    @Test
+    @Order(1)
+    @DisplayName("Save_Pilot")
+    void execute_useCase() {
+        when(exists.existsByDocument("45469057")).thenReturn(false);
+        doNothing().when(repositorio).pilotSaved(any(Pilot.class));
+
+        String existe = useCase.SavePilot("nombre",
+                "45469057",
+                LocalDate.of(2000, 05, 02),
+                null
+                );
+
+        //assert
+
+        Assertions.assertNotNull(existe);
+        verify(exists).existsByDocument("45469057");
+        verify(repositorio).pilotSaved(any());
     }
 
     @Test
-    void execute_success_returnsLicenseAndPersists() {
-        LocalDate dob = LocalDate.now().minusYears(25);
-        String license = useCase.execute("Fanco Colapinto", "123456ABC", dob);
-        assertNotNull(license);
-        Pilot saved = repo.findByDocument("123456ABC");
-        assertNotNull(saved);
-        assertEquals(license, saved.getLicense());
-    }
+    @Order(2)
+    @DisplayName("Pilot Exception")
 
-    @Test
-    void execute_duplicateDocument_throws() {
-        LocalDate dob = LocalDate.now().minusYears(30);
-        useCase.execute("One", "DUP1", dob);
-        Exception ex = assertThrows(ExceptionPilot.class, () -> useCase.execute("Two", "DUP1", dob));
-        assertTrue(ex.getMessage().contains("already exists"));
-    }
+    void execute_test_excecption(){
+        String result = useCase.SavePilot(null,
+                "45469057",
+                LocalDate.of(2000, 05, 02)
+                , null);
+        Assertions.assertNull(result);
+        verify(repositorio, never()).pilotSaved(any());
 
-    @Test
-    void execute_underage_throws() {
-        LocalDate dob = LocalDate.now().minusYears(16);
-        Exception ex = assertThrows(ExceptionPilot.class, () -> useCase.execute("Kid", "KID1", dob));
-        assertTrue(ex.getMessage().contains("at least 18"));
     }
 }

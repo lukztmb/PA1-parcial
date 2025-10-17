@@ -1,5 +1,8 @@
+
 package model.piloto.repository;
 
-public interface SavePilot {
+import model.piloto.model.Pilot;
 
+public interface SavePilot {
+    
 }
